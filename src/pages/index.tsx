@@ -1,14 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
   const user = useUser();
+
+  const { data } = api.stickyNotes.getAll.useQuery();
 
   return (
     <>
@@ -21,8 +21,12 @@ const Home: NextPage = () => {
         <div>
           {!user.isSignedIn && <SignInButton />}
           {!!user.isSignedIn && <SignOutButton />}
+          <div>
+            {data?.map((stickyNote) => (
+              <div key={stickyNote.id}>{stickyNote.content}</div>
+            ))}
+          </div>
         </div>
-        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
       </main>
     </>
   );
